@@ -187,6 +187,7 @@ import ConversionChart from '@/components/dashboard/ConversionChart.vue'
 import CardBrandsChart from '@/components/dashboard/CardBrandsChart.vue'
 import { useDashboardMetrics } from '@/composables/useDashboardMetrics'
 import { useDateRange } from '@/composables/useDateRange'
+import mockData from '@/data/mock.json'
 
 const { metrics, revenueData, loading, fetchMetrics } = useDashboardMetrics()
 const { startDate, endDate, periodOptions, updatePeriod } = useDateRange()
@@ -218,17 +219,9 @@ const conversionData = computed(() => {
   ]
 })
 
-const cardBrandsData = ref([
-  { name: 'Visa', value: 85, logo: '/brands/visa.png' },
-  { name: 'Mastercard', value: 72, logo: '/brands/mastercard.png' },
-  { name: 'Elo', value: 65, logo: '/brands/elo.png' },
-  { name: 'Hipercard', value: 58, logo: '/brands/hipercard.png' },
-  { name: 'Amex', value: 45, logo: '/brands/amex.png' },
-  { name: 'Google Pay', value: 38, logo: '/brands/gpay.png' },
-  { name: 'Samsung Pay', value: 32, logo: '/brands/samsung-pay.png' },
-  { name: 'Apple Pay', value: 28, logo: '/brands/apple-pay.png' },
-  { name: 'Hiper', value: 22, logo: '/brands/hiper.png' }
-])
+const cardBrandsData = computed(() => {
+  return mockData.cardBrands || []
+})
 
 const handleAuthorizeTransfer = async (transferId) => {
   console.log('Authorizing transfer:', transferId)

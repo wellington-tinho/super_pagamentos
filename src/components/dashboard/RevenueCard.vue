@@ -11,16 +11,18 @@
     </div>
     
     <div class="revenue-card__value">
-      <span class="revenue-card__currency">R$</span>
-      <span class="revenue-card__amount">{{ formattedValue }}</span>
-    </div>
-    
-    <div class="revenue-card__growth" v-if="growth">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path d="M7 1L7 13M7 1L1 7M7 1L13 7" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span class="revenue-card__growth-value">{{ growth }}%</span>
-      <span class="revenue-card__growth-text">Em crescimento</span>
+      <div>
+        <span class="revenue-card__currency">R$</span>
+        <span class="revenue-card__amount">{{ formattedValue }}</span>
+      </div>
+      
+      <div class="revenue-card__growth" v-if="growth">
+        
+        <span class="revenue-card__growth-value"><svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M7 1L7 13M7 1L1 7M7 1L13 7" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg> {{ growth }}%</span>
+        <span class="revenue-card__growth-text">Em crescimento</span>
+      </div>
     </div>
   </BaseCard>
 </template>
@@ -71,7 +73,7 @@ const formattedValue = computed(() => {
 }
 
 .revenue-card__title {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
@@ -90,8 +92,8 @@ const formattedValue = computed(() => {
 
 .revenue-card__value {
   display: flex;
-  align-items: baseline;
-  gap: var(--spacing-8);
+  align-items: center;
+  gap: var(--spacing-12);
   margin-bottom: var(--spacing-16);
 }
 
@@ -102,7 +104,7 @@ const formattedValue = computed(() => {
 }
 
 .revenue-card__amount {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
   line-height: var(--line-height-tight);
@@ -110,8 +112,8 @@ const formattedValue = computed(() => {
 
 .revenue-card__growth {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-8);
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .revenue-card__growth-value {

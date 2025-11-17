@@ -8,15 +8,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.0",
+    "@headlessui/vue": "^1.7.16",
+    "apexcharts": "^5.3.6",
     "axios": "^1.6.7",
     "radix-vue": "^1.8.2",
-    "@headlessui/vue": "^1.7.16"
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0",
+    "vue3-apexcharts": "^1.10.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
     "vite": "^5.1.6"
   }
 }
-

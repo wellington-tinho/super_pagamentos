@@ -15,7 +15,7 @@
 //  - shadcn/vue (ou equivalentes estilizadas)
 //  - Headless UI
 //  - Radix Vue
-//  - Vuetify (somente quando fizer sentido e sem distorcer o design)
+//  - Apexcharts (somente quando fizer sentido)
 //  - Qualquer UI library minimalista que acelere o desenvolvimento
 //
 // Regras IMPORTANTES:

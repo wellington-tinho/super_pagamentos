@@ -11,18 +11,19 @@
     </div>
     
     <div class="card-brands-chart__content">
-      <div class="card-brands-chart__bars">
-        <div
-          v-for="(bar, index) in bars"
-          :key="index"
-          class="card-brands-chart__bar"
-          :style="{ height: `${(bar.value / maxValue) * 100}%` }"
-        ></div>
+      <div class="card-brands-chart__chart-wrapper">
+        <apexchart
+          type="bar"
+          height="99"
+          :options="chartOptions"
+          :series="series"
+          class="card-brands-chart__apex"
+        />
       </div>
       
       <div class="card-brands-chart__brands">
         <img
-          v-for="(brand, index) in brands"
+          v-for="(brand, index) in data"
           :key="index"
           :src="brand.logo"
           :alt="brand.name"
@@ -34,8 +35,8 @@
 </template>
 
 <script setup>
-import BaseCard from '../BaseCard.vue'
 import { computed } from 'vue'
+import BaseCard from '../BaseCard.vue'
 
 const props = defineProps({
   data: {
@@ -46,18 +47,73 @@ const props = defineProps({
 })
 
 const maxValue = computed(() => {
+  if (!props.data || props.data.length === 0) return 100
   return Math.max(...props.data.map(item => item.value))
 })
 
-const bars = computed(() => {
-  return props.data.map(item => ({ value: item.value }))
+const series = computed(() => {
+  return [{
+    name: 'Uso',
+    data: props.data.map(item => item.value)
+  }]
 })
 
-const brands = computed(() => {
-  return props.data.map(item => ({
-    name: item.name,
-    logo: item.logo || '/placeholder-brand.png'
-  }))
+const chartOptions = computed(() => {
+  return {
+    chart: {
+      type: 'bar',
+      height: 99,
+      toolbar: { show: false },
+      sparkline: { enabled: false },
+      animations: {
+        enabled: true,
+        easing: 'easeinout',
+        speed: 800
+      }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '8',
+        borderRadius: 4, 
+        distributed: false,
+        dataLabels: {
+          position: 'top'
+        }
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: false
+    },
+    colors: ['#0641fc'],
+    xaxis: {
+      categories: props.data.map(() => ''),
+      labels: {
+        show: false
+      },
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: false
+      }
+    },
+    yaxis: {
+      show: false
+    },
+    grid: {
+      show: false
+    },
+    tooltip: {
+      enabled: false
+    },
+    legend: {
+      show: false
+    }
+  }
 })
 </script>
 
@@ -97,19 +153,13 @@ const brands = computed(() => {
   gap: var(--spacing-16);
 }
 
-.card-brands-chart__bars {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--spacing-4);
+.card-brands-chart__chart-wrapper {
+  width: 100%;
   height: 99px;
 }
 
-.card-brands-chart__bar {
-  flex: 1;
-  background: var(--color-chart-blue);
-  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
-  min-height: 8px;
-  transition: height 0.3s ease;
+.card-brands-chart__apex {
+  width: 100%;
 }
 
 .card-brands-chart__brands {
@@ -117,12 +167,15 @@ const brands = computed(() => {
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-8);
+  flex-wrap: wrap;
 }
 
 .card-brands-chart__brand-logo {
   height: 24px;
   width: auto;
   object-fit: contain;
+  flex: 1;
+  min-width: 0;
 }
 
 @media (max-width: 768px) {
@@ -130,7 +183,7 @@ const brands = computed(() => {
     padding: var(--spacing-16);
   }
   
-  .card-brands-chart__bars {
+  .card-brands-chart__chart-wrapper {
     height: 80px;
   }
   

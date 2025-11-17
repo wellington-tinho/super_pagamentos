@@ -1,180 +1,206 @@
 <template>
   <div class="bar-chart">
-    <div class="bar-chart__y-axis">
-      <span v-for="tick in yAxisTicks" :key="tick" class="bar-chart__y-tick">{{ formatYAxis(tick) }}</span>
-    </div>
-    
-    <div class="bar-chart__content">
-      <div class="bar-chart__bars">
-        <div
-          v-for="(item, index) in data"
-          :key="index"
-          class="bar-chart__bar-wrapper"
-          :style="{ width: `${100 / data.length}%` }"
-        >
-          <div
-            class="bar-chart__bar"
-            :class="getBarClass(item.value)"
-            :style="{ height: `${(item.value / maxValue) * 100}%` }"
-          ></div>
-        </div>
-      </div>
-      
-      <div class="bar-chart__x-axis">
-        <span v-for="(item, index) in data" :key="index" class="bar-chart__x-tick">{{ item.day }}</span>
-      </div>
-    </div>
+    <apexchart
+      type="bar"
+      :height="isMobile ? 160 : 220"
+      :options="chartOptions"
+      :series="series"
+      class="bar-chart__apex"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   data: {
     type: Array,
     required: true,
     default: () => []
-  },
-  maxValue: {
-    type: Number,
-    default: 200000
   }
 })
 
-const yAxisTicks = computed(() => {
-  return [200000, 100000, 50000, 0]
+const isMobile = ref(false)
+
+const handleResize = () => {
+  if (typeof window !== 'undefined') {
+    isMobile.value = window.innerWidth <= 768
+  }
+}
+
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', handleResize)
+    handleResize()
+  }
 })
 
-const formatYAxis = (value) => {
-  if (value >= 1000) {
-    return `${value / 1000}K`
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', handleResize)
   }
-  return value.toString()
-}
+})
 
-const getBarClass = (value) => {
-  const percentage = (value / props.maxValue) * 100
-  if (percentage > 70) {
-    return 'bar-chart__bar--high'
-  } else if (percentage > 40) {
-    return 'bar-chart__bar--medium'
+// Escala fixa de 0 a 200K
+const FIXED_MAX = 200000
+const THRESHOLD = 50000 // 50K - ponto onde começa o gradiente azul para verde
+
+const series = computed(() => {
+  return [{
+    name: 'Faturamento',
+    data: props.data.map(item => item.value)
+  }]
+})
+
+const chartOptions = computed(() => {
+  return {
+    chart: {
+      type: 'bar',
+      height: isMobile.value ? 120 : 162,
+      toolbar: { show: false },
+      sparkline: { enabled: false },
+      animations: {
+        enabled: true,
+        easing: 'easeinout',
+        speed: 800
+      }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: isMobile.value ? '6px' : '8px',
+        borderRadius: '4',
+        distributed: true,
+        dataLabels: {
+          position: 'top'
+        }
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: false
+    },
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shade: 'light',
+        type: 'vertical',
+        shadeIntensity: 0.5,
+        gradientToColors: props.data.map(item => {
+          // Se o valor é maior ou igual a 50K, usa verde como cor final do gradiente
+          if (item.value > THRESHOLD) {
+            return '#10b981'
+          }
+          // Se o valor é menor que 50K, mantém azul
+          return '#0641fc'
+        }),
+        inverseColors: true,
+        opacityFrom: 1,
+        opacityTo: 1,
+        stops: [0, 100]
+      }
+    },
+    colors: props.data.map(item => {
+      // Cor base do gradiente (sempre azul para começar)
+      if (item.value < THRESHOLD) {
+        return '#0641fc'
+      }
+      // Para valores >= 50K, começa com azul e gradiente vai para verde
+      return '#0641fc'
+    }),
+    xaxis: {
+      categories: props.data.map(item => item.day),
+      labels: {
+        style: {
+          fontSize: isMobile.value ? '10px' : '12px',
+          fontFamily: 'Plus Jakarta Sans, sans-serif',
+          colors: '#86898b'
+        },
+        offsetY: 0,
+        rotate: 0
+      },
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: false
+      }
+    },
+    yaxis: {
+      min: 0,
+      max: FIXED_MAX,
+      tickAmount: 4,
+      labels: {
+        style: {
+          fontSize: isMobile.value ? '10px' : '12px',
+          fontFamily: 'Plus Jakarta Sans, sans-serif',
+          colors: '#86898b'
+        },
+        formatter: (value) => {
+          if (value >= 1000) {
+            return `${value / 1000}K`
+          }
+          return value.toString()
+        }
+      }
+    },
+    grid: {
+      show: true,
+      borderColor: '#eeeeee',
+      strokeDashArray: 0,
+      position: 'back',
+      xaxis: {
+        lines: {
+          show: false
+        }
+      },
+      yaxis: {
+        lines: {
+          show: true,
+          strokeDashArray: 0
+        }
+      },
+      padding: {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+      }
+    },
+    tooltip: {
+      enabled: true,
+      theme: 'light',
+      style: {
+        fontSize: '12px',
+        fontFamily: 'Plus Jakarta Sans, sans-serif'
+      },
+      y: {
+        formatter: (value) => {
+          return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 0
+          }).format(value)
+        }
+      }
+    },
+    legend: {
+      show: false
+    }
   }
-  return 'bar-chart__bar--low'
-}
+})
 </script>
 
 <style scoped>
 .bar-chart {
-  display: flex;
-  gap: var(--spacing-16);
-  height: 162px;
+  width: 100%;
 }
 
-.bar-chart__y-axis {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 39px;
-  height: 100%;
-}
-
-.bar-chart__y-tick {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  text-align: right;
-}
-
-.bar-chart__content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-8);
-}
-
-.bar-chart__bars {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--spacing-4);
-  height: 153px;
-  position: relative;
-}
-
-.bar-chart__bars::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 37px,
-    var(--color-border-light) 37px,
-    var(--color-border-light) 38px
-  );
-  pointer-events: none;
-}
-
-.bar-chart__bar-wrapper {
-  display: flex;
-  align-items: flex-end;
-  height: 100%;
-}
-
-.bar-chart__bar {
-  width: 8px;
-  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
-  transition: height 0.3s ease;
-}
-
-.bar-chart__bar--low {
-  background: var(--color-chart-blue);
-}
-
-.bar-chart__bar--medium {
-  background: var(--color-chart-purple);
-}
-
-.bar-chart__bar--high {
-  background: var(--color-chart-green);
-}
-
-.bar-chart__x-axis {
-  display: flex;
-  justify-content: space-between;
-  height: 15px;
-}
-
-.bar-chart__x-tick {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  text-align: center;
-  flex: 1;
-}
-
-@media (max-width: 768px) {
-  .bar-chart {
-    height: 120px;
-    gap: var(--spacing-8);
-  }
-  
-  .bar-chart__y-axis {
-    width: 30px;
-  }
-  
-  .bar-chart__bars {
-    height: 100px;
-  }
-  
-  .bar-chart__bar {
-    width: 6px;
-  }
-  
-  .bar-chart__x-tick {
-    font-size: var(--font-size-xs);
-  }
+.bar-chart__apex :deep(.apexcharts-canvas) {
+  font-family: var(--font-family) !important;
 }
 </style>
 
