@@ -1,0 +1,107 @@
+:root {
+  /* Cores - Extraídas do Figma */
+  --color-primary: #0641fc;
+  --color-primary-light: #d1dcff;
+  --color-secondary: #2a2e33;
+  --color-text-primary: #11151b;
+  --color-text-secondary: #86898b;
+  --color-text-tertiary: #2a2e33;
+  --color-background: #edeff4;
+  --color-white: #ffffff;
+  --color-border: #d9d9d9;
+  --color-border-light: #eeeeee;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  
+  /* Cores dos gráficos */
+  --color-chart-blue: #0641fc;
+  --color-chart-purple: #7c3aed;
+  --color-chart-light-purple: #a78bfa;
+  --color-chart-light-blue: #60a5fa;
+  --color-chart-orange: #f59e0b;
+  --color-chart-green: #10b981;
+  
+  /* Espaçamentos - Base 4px */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-48: 48px;
+  --spacing-64: 64px;
+  
+  /* Tipografia - Plus Jakarta Sans */
+  --font-family: 'Plus Jakarta Sans', sans-serif;
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  
+  --line-height-normal: 1.4;
+  --line-height-tight: 1.2;
+  
+  /* Bordas */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
+  --border-radius-full: 250px;
+  --border-width: 1px;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  /* Layout */
+  --sidebar-width: 315px;
+  --header-height: 77px;
+  
+  /* Breakpoints */
+  --breakpoint-mobile: 375px;
+  --breakpoint-desktop: 1920px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+/* Utilitários de espaçamento */
+.mt-4 { margin-top: var(--spacing-4); }
+.mt-8 { margin-top: var(--spacing-8); }
+.mt-16 { margin-top: var(--spacing-16); }
+.mt-24 { margin-top: var(--spacing-24); }
+.mb-4 { margin-bottom: var(--spacing-4); }
+.mb-8 { margin-bottom: var(--spacing-8); }
+.mb-16 { margin-bottom: var(--spacing-16); }
+.mb-24 { margin-bottom: var(--spacing-24); }
+.p-8 { padding: var(--spacing-8); }
+.p-16 { padding: var(--spacing-16); }
+.p-24 { padding: var(--spacing-24); }
+

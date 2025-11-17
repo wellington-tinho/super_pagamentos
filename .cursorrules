@@ -1,0 +1,154 @@
+// ========================================================
+// REGRAS PARA CONSTRUÇÃO
+// Vue 3 (Composition API) — Sem TypeScript — Figma Pixel Perfect
+// ========================================================
+
+// ======================================================
+// Bibliotecas de UI — PERMITIDAS
+// ======================================================
+//
+// É permitido utilizar bibliotecas de componentes/UI para recriar elementos
+// do layout, desde que o resultado final seja visualmente fiel ao Figma.
+//
+// Exemplos de bibliotecas permitidas:
+//
+//  - shadcn/vue (ou equivalentes estilizadas)
+//  - Headless UI
+//  - Radix Vue
+//  - Vuetify (somente quando fizer sentido e sem distorcer o design)
+//  - Qualquer UI library minimalista que acelere o desenvolvimento
+//
+// Regras IMPORTANTES:
+//  - Mesmo usando bibliotecas, os componentes DEVEM respeitar exatamente
+//    o layout do Figma.
+//  - Nenhum componente pode gerar inconsistências visuais
+//    (espaçamentos, bordas, tipografia, cores).
+//  - Quando necessário, sobrescrever estilos para garantir a fidelidade.
+// ======================================================
+
+
+// ======================================================
+// Folder Structure — Clean Architecture for the Test
+// ======================================================
+const folderStructure = `
+src/
+  assets/               # imagens, logos, ícones, fontes
+  components/           # componentes reutilizáveis e isolados
+  composables/          # funções de lógica reutilizável (useSomething.js)
+  services/             # comunicação com API usando Axios
+  router/               # rotas da aplicação
+  views/                # páginas do Figma separadas por contexto
+  styles/               # variáveis globais, tokens e utilidades
+  App.vue
+  main.js
+`;
+
+
+// ---------------------------
+// 1. Estrutura do Projeto
+// ---------------------------
+const structureRules = [
+  "Organizar o projeto por FEATURE (dashboard/, charts/, cards/, navbar/, sidebar/), e não por tipo de arquivo.",
+  "Criar uma camada de components/ com elementos reutilizáveis (BaseButton, BaseCard, BaseInput, ChartCard, InfoCard).",
+  "Criar uma camada de composables/ apenas para lógica (useMenu, useDashboardMetrics, useDateRange).",
+  "Criar diretório styles/ com tokens globais: cores, espaçamentos, tipografia."
+];
+
+// ---------------------------
+// 2. Fidelidade ao Figma
+// ---------------------------
+const figmaRules = [
+  "Reproduzir fontes, pesos, espaçamentos, bordas e alinhamentos exatamente iguais ao Figma.",
+  "Reutilizar padrões visuais: cards arredondados, sombras suaves, espaçamentos 16 / 24 / 32px.",
+  "Nunca 'inventar' cores: extrair do Figma via eyedropper.",
+  "Garantir que gráficos, cards e ícones mantenham as proporções do Figma (não esticar, não achatar).",
+  "Seguir a mesma escala de borda (8px, 12px, 16px), conforme visto no dashboard."
+];
+
+// ---------------------------
+// 3. Responsividade (mobile e desktop)
+// ---------------------------
+const responsiveRules = [
+  "Usar CSS Grid e Flex para quebrar layout com fluidez sem escrever media queries excessivas.",
+  "As mesmas seções devem rearranjar, não desaparecer.",
+  "Componentes devem colapsar de forma lógica: gráfico grande → gráfico vertical; cards lado a lado → cards empilhados.",
+  "Menu lateral deve virar bottom bar no mobile, conforme referência da imagem enviada.",
+  "Usar breakpoints próximos aos do Figma: 375px (mobile) e 1920px (desktop).",
+];
+
+// ---------------------------
+// 4. Componentização
+// ---------------------------
+const componentRules = [
+  "Cada seção do dashboard deve ser um componente isolado (RevenueCard.vue, ChartSection.vue, PendingTransferCard.vue).",
+  "Criar componentes altamente reutilizáveis para estrutura base: BaseCard.vue, BaseTag.vue, BaseChip.vue.",
+  "Gráficos devem ser encapsulados (ex: BarChart.vue, LineChart.vue) com props para dados.",
+  "Não repetir HTML — sempre mover padrões repetidos para componentes reutilizáveis.",
+];
+
+// ---------------------------
+// 5. Lógica com Composition API (sem TypeScript)
+// ---------------------------
+const compositionRules = [
+  "Dentro do <script setup>, manter apenas composição de componentes e pequenas interações.",
+  "Mover lógica de dados (filtros, datas, ordenação) para composables/ (ex: useDashboardMetrics.js).",
+  "Cada composable deve ter único propósito (useMenu apenas controla sidebar/bottom-nav).",
+  "Sempre retornar { state, computedProps, actions } de cada composable.",
+  "Manter funções puras sempre que possível."
+];
+
+// ---------------------------
+// 6. Pseudocódigo antes de codar (para uso no Cursor)
+// ---------------------------
+const pseudocodeRules = [
+  "Antes de gerar um componente no Cursor, descrever em pseudocódigo:",
+  "- Estrutura visual (grid/flex)",
+  "- Estados necessários (ex: filtro de data, loading, dropdown menu)",
+  "- Props de entrada e emits",
+  "- Responsividade esperada",
+  "- Estados interativos (expandir/contrair, tabs, gráficos dinâmicos)",
+  "O Cursor deve sempre gerar o componente final com base no pseudocódigo."
+];
+
+// ---------------------------
+// 7. Services (Axios)
+// ---------------------------
+const servicesRules = [
+  "Criar um único service global apiService.js com axios.create().",
+  "Criar funções simples como getDashboardMetrics(), sem lógica complexa.",
+  "Tratar erros dentro do composable, não no componente.",
+  "Mockar dados caso o teste não exija API real."
+];
+
+// ---------------------------
+// 8. CSS e Estilo
+// ---------------------------
+const cssRules = [
+  "Sempre usar <style scoped> para evitar vazamento de CSS.",
+  "Utilizar variáveis globais em :root (cores, fontes e sombras).",
+  "Adotar utilitários simples de espaçamento (ex: .mt-24, .mb-16).",
+  "Evitar CSS complexo — usar grid e flex para 90% do layout."
+];
+
+// ---------------------------
+// 9. Desempenho e Manutenabilidade
+// ---------------------------
+const maintainRules = [
+  "Componentes pequenos (<200 linhas).",
+  "Evitar watchers desnecessários — usar computed quando possível.",
+  "Evitar objetos reativos gigantes — preferir ref() e computed().",
+  "Criar helpers para formatação numérica, moeda e percentuais.",
+  "Agrupar responsabilidades em pequenas funções."
+];
+
+// ---------------------------
+// 10. Regras específicas do dashboard enviado
+// ---------------------------
+const dashboardSpecificRules = [
+  "A área de faturamento (gráfico grande) deve ser o foco visual do dashboard.",
+  "Cards pequenos (R$ 8260,10 / R$ 1260,10...) devem usar o mesmo padrão visual (bordas, shadow, ícones, tipografia).",
+  "A seção 'Conversão por modalidade' deve usar charts circulares com cores fiéis ao Figma.",
+  "A tabela de 'Bandeiras mais utilizadas' deve seguir o layout exato (ícones + linha + valores).",
+  "O botão 'Autorizar transferência' deve ser componente isolado (BaseButton.vue).",
+  "Menu lateral deve ter modo colapsado e hover, conforme o Figma.",
+];
