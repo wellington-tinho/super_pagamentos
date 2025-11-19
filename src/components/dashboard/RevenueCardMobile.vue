@@ -1,17 +1,8 @@
 <template>
   <BaseCard class="revenue-card">
     <div class="revenue-card__header">
-      <h2 class="revenue-card__title">Faturamento</h2>
-      <Eye
-        class="icon-eye"
-        v-if="isShowAmount" 
-        @click="handleChangeIsShowAmount"
-      />
-      <EyeClosed 
-        v-else
-        class="icon-eye"
-        @click="handleChangeIsShowAmount"
-      />
+      <h2 class="revenue-card__title">Estatísticas do período</h2>
+      <Funnel class="icon-funnel" size="40" color="black" @click="openDateRange"/>
     </div>
     
     <div class="revenue-card__value">
@@ -33,16 +24,21 @@
         <span class="revenue-card__growth-value"><svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M7 1L7 13M7 1L1 7M7 1L13 7" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg> {{ growth }}%</span>
-        <span class="revenue-card__growth-text">Em crescimento</span>
       </div>
     </div>
+    <DateRange
+      ref="dateRangeRef"
+      :shortcurts="true"
+      class="revenue-card__date-range-helper"
+    />
   </BaseCard>
 </template>
 
 <script setup>
 import BaseCard from '../BaseCard.vue'
-import { computed } from 'vue'
-import { Eye, EyeClosed, Dot } from 'lucide-vue-next';
+import DateRange from './DateRange.vue'
+import { computed, ref } from 'vue'
+import { Funnel, Dot } from 'lucide-vue-next';
 
 
 const props = defineProps({
@@ -63,31 +59,42 @@ const props = defineProps({
 
 const emit = defineEmits(['toggleShowAmount'])
 
+const dateRangeRef = ref(null)
+
 const formattedValue = computed(() => {
   return new Intl.NumberFormat('pt-BR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }).format(props.value)
+  }).format(props.value - 300449.08)
 })
 
-const handleChangeIsShowAmount = () => {
-  emit('toggleShowAmount')
+const openDateRange = () => {
+  if (dateRangeRef.value?.open) {
+    dateRangeRef.value.open()
+  }
 }
-
 
 </script>
 
 <style scoped>
 
-.icon-eye{
-  font-size: 24;
+.icon-funnel{
   color: var(--color-text-secondary);
   cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--color-text-secondary);
+}
+.revenue-card__date-range-helper{
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.revenue-card {
-  padding: var(--spacing-24);
+:deep(.demo-datetime-picker-icon){
+  display: none;
 }
+
 .revenue-card__value-container{
   gap: var(--spacing-8);
   display: flex;
@@ -95,7 +102,6 @@ const handleChangeIsShowAmount = () => {
   justify-content: center;
 }
 
-@media (max-width: 768px) {
   .revenue-card {
     padding: 0;
     background: transparent;
@@ -110,20 +116,20 @@ const handleChangeIsShowAmount = () => {
   }
   
   .revenue-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
     margin-bottom: var(--spacing-12);
   }
   
   .revenue-card__title {
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-family);
+    color: var(--color-text-primary);
   }
   
-  .revenue-card__value {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-8);
-    margin-bottom: 0;
-  }
   
   .revenue-card__value-container {
     justify-content: flex-start;
@@ -139,7 +145,7 @@ const handleChangeIsShowAmount = () => {
   
   .revenue-card__growth {
     flex-direction: row;
-    align-items: center;
+    align-items: start;
     gap: var(--spacing-8);
   }
   
@@ -151,21 +157,7 @@ const handleChangeIsShowAmount = () => {
     width: 20px;
     height: 20px;
   }
-}
 
-.revenue-card__header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--spacing-12);
-  margin-bottom: var(--spacing-16);
-}
-
-.revenue-card__title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-}
 
 .revenue-card__info {
   width: 24px;
@@ -181,8 +173,9 @@ const handleChangeIsShowAmount = () => {
 
 .revenue-card__value {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-12);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-4);
   margin-bottom: var(--spacing-16);
 }
 
@@ -194,9 +187,9 @@ const handleChangeIsShowAmount = () => {
 }
 
 .revenue-card__amount {
-  font-size: 40px;
+  font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
+  color: var(--color-text-primary);
   line-height: var(--line-height-tight);
 }
 

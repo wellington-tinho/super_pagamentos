@@ -3,6 +3,7 @@
   <div class="demo-datetime-picker-icon">
     <div class="block">
       <el-date-picker
+        ref="datePickerRef"
         v-model="valueAux"
         type="daterange"
         start-placeholder="Data inicial"
@@ -11,6 +12,7 @@
         date-format="DD/MM/YYYY ddd"
         time-format="A hh:mm:ss"
         range-separator="|"
+        :shortcuts="availableShortcuts"
       >
       </el-date-picker>
     </div>
@@ -19,13 +21,77 @@
 
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ElConfigProvider } from 'element-plus'
-import ptBr from "element-plus/dist/locale/pt-br.mjs"
+import ptBr from 'element-plus/dist/locale/pt-br.mjs'
+import { computed, ref } from 'vue'
 
-import { ref } from 'vue'
+const props = defineProps({
+  shortcurts: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const valueAux = ref('')
+const datePickerRef = ref(null)
+
+const createRangeByDays = (days) => {
+  const end = new Date()
+  const start = new Date()
+  start.setDate(start.getDate() - days)
+  return [start, end]
+}
+
+const createRangeByMonths = (months) => {
+  const end = new Date()
+  const start = new Date()
+  start.setMonth(start.getMonth() - months)
+  return [start, end]
+}
+
+const createRangeForCurrentMonth = () => {
+  const end = new Date()
+  const start = new Date(end.getFullYear(), end.getMonth(), 1)
+  return [start, end]
+}
+
+const shortcuts = [
+  {
+    text: 'Última semana',
+    value: () => createRangeByDays(7)
+  },
+  {
+    text: 'Últimos 15 dias',
+    value: () => createRangeByDays(15)
+  },
+  {
+    text: 'Últimos 30 dias',
+    value: () => createRangeByDays(30)
+  },
+  {
+    text: 'Últimos 3 meses',
+    value: () => createRangeByMonths(3)
+  },
+  {
+    text: 'Este mês',
+    value: () => createRangeForCurrentMonth()
+  }
+]
+
+const availableShortcuts = computed(() =>
+  props.shortcurts ? shortcuts : undefined
+)
+
+const open = () => {
+  if (datePickerRef.value?.handleOpen) {
+    datePickerRef.value.handleOpen()
+  }
+}
+
+defineExpose({
+  open
+})
 </script>
 
 <style scoped>

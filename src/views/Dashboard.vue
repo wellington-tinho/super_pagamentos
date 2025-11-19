@@ -2,7 +2,12 @@
   <div class="dashboard">
     <Sidebar />
     <Header />
-    <MobileHeader :value="metrics?.totalRevenue || 0" />
+    <MobileHeader 
+      v-if="hasMetrics"
+      :value="metrics.totalRevenue" 
+      :isShowAmount="isShowAmount"
+      @toggleShowAmount="isShowAmount = !isShowAmount"
+    />
     <BottomNavigation />
     
     <main class="dashboard__main">
@@ -11,10 +16,7 @@
           <BaseButton variant="primary" class="dashboard__new-charge-btn">
             Nova cobrança
             <template #icon-right>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="2"/>
-                <path d="M9 5V13M5 9H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
+              <component class="icone" :is="AddCircle" />
             </template>
           </BaseButton>
           
@@ -59,12 +61,14 @@
       </div>
       
       <div class="dashboard__content">
-        <div class="dashboard__revenue-section">
-          
+        <div
+          v-if="hasMetrics"
+          class="dashboard__revenue-section"
+        >
           <div class="dashboard__revenue-chart">
             <RevenueCard
-              :value="metrics?.totalRevenue || 0"
-              :growth="metrics?.growth || 0"
+              :value="metrics.totalRevenue"
+              :growth="metrics.growth"
               :isShowAmount="isShowAmount"
               @toggleShowAmount="isShowAmount = !isShowAmount"
             />
@@ -74,13 +78,13 @@
               <MetricCard
                 :isShowAmount="isShowAmount"
                 label="Faturamento recebido"
-                :value="metrics?.revenueReceived || 0"
+                :value="metrics.revenueReceived"
                 dot-color="#0641fc"
               />
               <MetricCard
                 :isShowAmount="isShowAmount"
                 label="Faturamento previsto"
-                :value="metrics?.revenuePredicted || 0"
+                :value="metrics.revenuePredicted"
                 dot-color="#7c3aed"
                 tag="D+2"
                 tag-variant="info"
@@ -88,24 +92,82 @@
               <MetricCard
                 :isShowAmount="isShowAmount"
                 label="Vendas pendentes"
-                :value="metrics?.pendingSales || 0"
+                :value="metrics.pendingSales"
                 dot-color="#f59e0b"
               />
               <MetricCard
                 :isShowAmount="isShowAmount"
                 label="Ticket médio"
-                :value="metrics?.averageTicket || 0"
+                :value="metrics.averageTicket"
                 dot-color="#7c3aed"
               />
               <MetricCard
                 :isShowAmount="isShowAmount"
                 label="Número de cobranças"
-                :value="metrics?.numberOfCharges || 0"
+                :value="metrics.numberOfCharges"
                 :is-currency="false"
                 dot-color="#2a2e33"
               />
             </div>
           </div>
+          <div class="dashboard__revenue-chart-mobile">
+
+            <div class="container">
+
+              <RevenueCardMobile
+                :value="metrics.totalRevenue"
+                :growth="metrics.growth"
+                :isShowAmount="isShowAmount"
+                @toggleShowAmount="isShowAmount = !isShowAmount"
+              />
+              <BarChartMobile :data="revenueData" :isShowAmount = "isShowAmount" />
+            </div>
+            
+            <div class="dashboard__metrics-grid">
+              <MetricCard
+                :isShowAmount="isShowAmount"
+                label="Faturamento recebido"
+                :value="metrics.revenueReceived"
+                dot-color="#0641fc"
+              />
+              <MetricCard
+                :isShowAmount="isShowAmount"
+                label="Faturamento previsto"
+                :value="metrics.revenuePredicted"
+                dot-color="#7c3aed"
+                tag="D+2"
+                tag-variant="info"
+              />
+              <MetricCard
+                :isShowAmount="isShowAmount"
+                label="Vendas pendentes"
+                :value="metrics.pendingSales"
+                dot-color="#f59e0b"
+              />
+              <MetricCard
+                :isShowAmount="isShowAmount"
+                label="Ticket médio"
+                :value="metrics.averageTicket"
+                dot-color="#7c3aed"
+              />
+              <MetricCard
+                :isShowAmount="isShowAmount"
+                label="Número de cobranças"
+                :value="metrics.numberOfCharges"
+                :is-currency="false"
+                dot-color="#2a2e33"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          v-else
+          class="dashboard__loading-state"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <span class="dashboard__loading-spinner" />
+          <p>Carregando métricas...</p>
         </div>
         
         <PendingTransferCard
@@ -115,39 +177,42 @@
           @authorize="handleAuthorizeTransfer"
         />
         
-        <div class="dashboard__financial-metrics">
+        <div
+          v-if="hasMetrics"
+          class="dashboard__financial-metrics"
+        >
           <FinancialMetricsCard
             title="Reembolsos"
-            :amount="metrics?.refunds || 0"
-            :count="metrics?.refundsCount || 0"
-            :percentage="metrics?.refundsPercentage || 0"
+            :amount="metrics.refunds"
+            :count="metrics.refundsCount"
+            :percentage="metrics.refundsPercentage"
             :show-percentage="true"
           />
           <FinancialMetricsCard
             title="Chargebacks"
-            :amount="metrics?.chargebacks || 0"
-            :count="metrics?.chargebacksCount || 0"
-            :percentage="metrics?.chargebacksPercentage || 0"
+            :amount="metrics.chargebacks"
+            :count="metrics.chargebacksCount"
+            :percentage="metrics.chargebacksPercentage"
             :show-percentage="true"
             :showBadge="true"
           />
           <FinancialMetricsCard
             title="Cancelados"
-            :amount="metrics?.canceled || 0"
-            :count="metrics?.canceledCount || 0"
-            :percentage="metrics?.canceledPercentage || 0"
+            :amount="metrics.canceled"
+            :count="metrics.canceledCount"
+            :percentage="metrics.canceledPercentage"
             :show-percentage="true"
           />
           <FinancialMetricsCard
             title="Não autorizado"
-            :amount="metrics?.unauthorized || 0"
-            :count="metrics?.unauthorizedCount || 0"
-            :percentage="metrics?.unauthorizedPercentage || 0"
+            :amount="metrics.unauthorized"
+            :count="metrics.unauthorizedCount"
+            :percentage="metrics.unauthorizedPercentage"
             :show-percentage="true"
           />
         </div>
         
-        <div class="dashboard__charts-row">
+        <div class="dashboard__charts-row" v-if="hasMetrics">
           <ConversionChart :data="conversionData" />
           <CardBrandsChart :data="cardBrandsData" />
         </div>
@@ -164,9 +229,11 @@ import MobileHeader from '@/components/layout/MobileHeader.vue'
 import BottomNavigation from '@/components/layout/BottomNavigation.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseSelect from '@/components/BaseSelect.vue'
+import RevenueCardMobile from '@/components/dashboard/RevenueCardMobile.vue'
 import RevenueCard from '@/components/dashboard/RevenueCard.vue'
 import MetricCard from '@/components/dashboard/MetricCard.vue'
 import BarChart from '@/components/charts/BarChart.vue'
+import BarChartMobile from '@/components/charts/BarChartMobile.vue'
 import PendingTransferCard from '@/components/dashboard/PendingTransferCard.vue'
 import FinancialMetricsCard from '@/components/dashboard/FinancialMetricsCard.vue'
 import ConversionChart from '@/components/dashboard/ConversionChart.vue'
@@ -174,17 +241,20 @@ import CardBrandsChart from '@/components/dashboard/CardBrandsChart.vue'
 import { useDashboardMetrics } from '@/composables/useDashboardMetrics'
 import { useDateRange } from '@/composables/useDateRange'
 import TypeOfCharge from '@/assets/bottons/type-of-charge.svg'
+import AddCircle from '@/assets/bottons/add-circle.svg'
 import mockData from '@/data/mock.json'
 import { CalendarDays } from 'lucide-vue-next';
 import DateRange from '@/components/dashboard/DateRange.vue';
 
-const { metrics, revenueData, fetchMetrics } = useDashboardMetrics()
+const { metrics, revenueData, fetchMetrics, loading } = useDashboardMetrics()
 const { periodOptions } = useDateRange()
+
 
 const selectedPeriod = ref('specific')
 const selectedChargeType = ref('')
 
 const isShowAmount = ref(true)
+const hasMetrics = computed(() => Boolean(metrics.value))
 
 const chargeTypeOptions = [
   { value: 'all', label: 'Todos os tipos' },
@@ -227,6 +297,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
+svg.icone{
+  transform: scale(0.8);
+}
 
 .dashboard {
   min-height: 100vh;
@@ -362,6 +435,38 @@ onMounted(() => {
   gap: var(--spacing-16);
 }
 
+.dashboard__loading-state {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-12);
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  padding: var(--spacing-24);
+}
+
+.dashboard__loading-spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--color-border-light);
+  border-top-color: var(--color-primary);
+  animation: dashboard-spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes dashboard-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 1920px) {
   .dashboard__charts-row {
     grid-template-columns: 1fr;
@@ -369,15 +474,57 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
+
+  .pipe-divider, .dashboard__items-left > div, .dashboard__items-right, .dashboard__download-btn{
+    display: none;
+  }
+  .dashboard__items-left, .dashboard__filters{
+    margin: 0;
+  }
+  .dashboard__main{
+    padding-top: 0;
+  }
+  .dashboard__new-charge-btn {
+    width: 100%;
+    min-width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-12);
+    padding: 0 var(--spacing-16);
+    height: 58px;
+    border-radius: var(--border-radius-full);
+    border: 1px solid transparent;
+    background-image:
+      linear-gradient(135deg, #2A2E33 0%, #2b0c72 100%),
+      linear-gradient(135deg, #0313f0 0%, #6a20ff 50%, #a329ff 100%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    box-shadow: 0 8px 35px rgba(3, 17, 112, 0.45);
+    font-size: var(--font-size-lg);
+    text-transform: none;
+  }
+
+  .dashboard__new-charge-btn :deep(.base-button__text) {
+    flex: 1;
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.2px;
+  }
+
+  .dashboard__new-charge-btn .icone {
+    /* width: 40px; */
+    /* height: 40px; */
+    /* padding: var(--spacing-8); */
+    border-radius: 50%;
+    /* background: rgba(255, 255, 255, 0.2); */
+    /* box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35); */
+  }
+  
   .dashboard__filters {
     flex-direction: column;
     align-items: stretch;
     margin-top: var(--spacing-16);
-  }
-  
-  .dashboard__new-charge-btn {
-    width: 100%;
-    min-width: auto;
   }
   
   .dashboard__filter {
@@ -405,18 +552,36 @@ onMounted(() => {
   }
   
   .dashboard__revenue-chart {
+    display: none;
+  }
+  
+  .dashboard__revenue-chart-mobile .container{
+    background: var(--color-white); 
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-24);
+    box-shadow: var(--shadow-sm);
     padding: var(--spacing-16);
     margin-top: var(--spacing-16);
   }
   
   .dashboard__metrics-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-12);
+    display: flex;
+    overflow-y: scroll;
+    margin-bottom: -10px
+  }
+
+  .dashboard__metrics-grid > div{
+    padding: 20px;
+    min-width: fit-content;
   }
   
   .dashboard__financial-metrics {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-12);
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-4);
+  }
+
+  :deep(.financial-metrics-card__percentage),   :deep(.financial-metrics-card__count){
+    display: none;
   }
   
   .dashboard__charts-row {

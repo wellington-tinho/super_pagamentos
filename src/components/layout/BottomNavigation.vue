@@ -6,13 +6,16 @@
       :class="['bottom-nav__item', { 'bottom-nav__item--active': isActive(item.path) }]"
       @click="navigate(item.path)"
     >
-      <Icon :name="item.icon" />
-      <span class="bottom-nav__label">{{ item.label }}</span>
+      <Icon :name="item.icon" v-if="item.icon != 'add'" />
+      <component :is="AddCircle" v-else class="icon-add" />
+      <span class="bottom-nav__label" v-if="item.icon != 'add'">{{ item.label }}</span>
     </button>
   </nav>
 </template>
 
 <script setup>
+import AddCircle from '@/assets/bottons/add-circle.svg'
+
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Icon from '../Icon.vue'
@@ -23,6 +26,7 @@ const route = useRoute()
 const menuItems = [
   { path: '/dashboard', label: 'Dashboard', icon: 'home' },
   { path: '/clientes', label: 'Clientes', icon: 'user' },
+  { path: '/bottons/add-circle', label: '*', icon: 'add' },
   { path: '/cobrancas', label: 'Cobranças', icon: 'money' },
   { path: '/carteira', label: 'Carteira', icon: 'wallet' }
 ]
@@ -37,6 +41,18 @@ const navigate = (path) => {
 </script>
 
 <style scoped>
+
+.icon-add{
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  padding: 2px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -40px;
+}
 .bottom-nav {
   position: fixed;
   bottom: 0;

@@ -38,7 +38,7 @@ defineEmits(['click'])
   align-items: center;
   justify-content: center;
   gap: var(--spacing-8);
-  padding: var(--spacing-12) var(--spacing-24);
+  padding: var(--spacing-8) var(--spacing-24);
   border: var(--border-width) solid transparent;
   border-radius: var(--border-radius-full);
   font-family: var(--font-family);
@@ -60,7 +60,7 @@ defineEmits(['click'])
 }
 
 .base-button--primary:hover:not(:disabled) {
-  background: #0533d9;
+  /* background: #0533d9; */
 }
 
 .base-button--secondary {
