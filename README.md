@@ -3,7 +3,7 @@
 Interface de dashboard financeira construída em Vue 3 (Composition API) com foco em fidelidade total ao layout do Figma, responsividade entre desktop e mobile e uma arquitetura organizada por features que facilita escalabilidade.
 
 ## Demo e Preview
-- Demo online: [https://super-pagamentos.vercel.app/dashboard](https://super-pagamentos.vercel.app/dashboard)
+- Demo online: [https://super-pagamentos.vercel.app](https://super-pagamentos.vercel.app)
 - Screenshot principal:
   ![Dashboard](https://raw.githubusercontent.com/wellington-tinho/super_pagamentos/refs/heads/main/public/demo.png)
 
