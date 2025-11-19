@@ -2,18 +2,30 @@
   <BaseCard class="revenue-card">
     <div class="revenue-card__header">
       <h2 class="revenue-card__title">Faturamento</h2>
-      <button class="revenue-card__info">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-          <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
+      <Eye
+        class="icon-eye"
+        v-if="isShowAmount" 
+        @click="handleChangeIsShowAmount"
+      />
+      <EyeClosed 
+        v-else
+        class="icon-eye"
+        @click="handleChangeIsShowAmount"
+      />
     </div>
     
     <div class="revenue-card__value">
-      <div>
+      <div class="revenue-card__value-container">
         <span class="revenue-card__currency">R$</span>
-        <span class="revenue-card__amount">{{ formattedValue }}</span>
+        <span class="revenue-card__amount" v-if="isShowAmount">
+          {{ formattedValue }}
+        </span>
+        <span class="revenue-card__amount" v-else style="gap:0;">
+          <Dot size="25" strokeWidth="10" />
+          <Dot size="25" strokeWidth="10" />
+          <Dot size="25" strokeWidth="10" />
+          <Dot size="25" strokeWidth="10" />
+        </span>
       </div>
       
       <div class="revenue-card__growth" v-if="growth">
@@ -30,6 +42,8 @@
 <script setup>
 import BaseCard from '../BaseCard.vue'
 import { computed } from 'vue'
+import { Eye, EyeClosed, Dot } from 'lucide-vue-next';
+
 
 const props = defineProps({
   value: {
@@ -39,8 +53,15 @@ const props = defineProps({
   growth: {
     type: Number,
     default: null
+  },
+  isShowAmount: {
+    type: Boolean,
+    default: true,
+    required: true
   }
 })
+
+const emit = defineEmits(['toggleShowAmount'])
 
 const formattedValue = computed(() => {
   return new Intl.NumberFormat('pt-BR', {
@@ -48,11 +69,30 @@ const formattedValue = computed(() => {
     maximumFractionDigits: 2
   }).format(props.value)
 })
+
+const handleChangeIsShowAmount = () => {
+  emit('toggleShowAmount')
+}
+
+
 </script>
 
 <style scoped>
+
+.icon-eye{
+  font-size: 24;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
 .revenue-card {
   padding: var(--spacing-24);
+}
+.revenue-card__value-container{
+  gap: var(--spacing-8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {
@@ -68,12 +108,13 @@ const formattedValue = computed(() => {
 .revenue-card__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: var(--spacing-12);
   margin-bottom: var(--spacing-16);
 }
 
 .revenue-card__title {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
@@ -98,13 +139,14 @@ const formattedValue = computed(() => {
 }
 
 .revenue-card__currency {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-secondary);
+  margin: 4px 4px 0 0;
 }
 
 .revenue-card__amount {
-  font-size: var(--font-size-4xl);
+  font-size: 40px;
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
   line-height: var(--line-height-tight);

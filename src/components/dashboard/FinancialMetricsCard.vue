@@ -1,7 +1,11 @@
 <template>
   <BaseCard class="financial-metrics-card">
     <div class="financial-metrics-card__header">
-      <h3 class="financial-metrics-card__title">{{ title }}</h3>
+      <h3 class="financial-metrics-card__title">{{ title }}
+        <span class="pending-transfer-card__badge" v-if="showBadge">
+         <span>!</span>
+        </span>
+      </h3>
       <div v-if="showPercentage" class="financial-metrics-card__percentage">
         <span>%</span>
       </div>
@@ -42,7 +46,12 @@ const props = defineProps({
   showPercentage: {
     type: Boolean,
     default: false
-  }
+  },
+  showBadge: {
+    type: Boolean,
+    default: false
+  },
+  
 })
 
 const formattedAmount = computed(() => {
@@ -74,10 +83,10 @@ const formattedAmount = computed(() => {
 }
 
 .financial-metrics-card__percentage {
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--border-radius-full);
-  background: var(--color-background);
+  border: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,6 +94,23 @@ const formattedAmount = computed(() => {
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
+
+.pending-transfer-card__badge {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--color-warning);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-left: 6px;
+  line-height: 0;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
 
 .financial-metrics-card__content {
   display: flex;
@@ -112,7 +138,8 @@ const formattedAmount = computed(() => {
 
 .financial-metrics-card__count {
   font-size: var(--font-size-base);
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-semibold);
 }
 
 .financial-metrics-card__percentage-value {

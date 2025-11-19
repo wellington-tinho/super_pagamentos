@@ -21,14 +21,21 @@
         />
       </div>
       
-      <div class="card-brands-chart__brands">
-        <img
+      <div 
+        class="card-brands-chart__brands"
+        :style="{ gridTemplateColumns: `repeat(${data.length}, 1fr)` }"
+      >
+        <div
           v-for="(brand, index) in data"
           :key="index"
-          :src="brand.logo"
-          :alt="brand.name"
-          class="card-brands-chart__brand-logo"
-        />
+          class="card-brands-chart__brand-item"
+        >
+          <img
+            :src="brand.logo"
+            :alt="brand.name"
+            class="card-brands-chart__brand-logo"
+          />
+        </div>
       </div>
     </div>
   </BaseCard>
@@ -47,15 +54,20 @@ const props = defineProps({
 })
 
 const maxValue = computed(() => {
-  if (!props.data || props.data.length === 0) return 100
-  return Math.max(...props.data.map(item => item.value))
+  return 100
 })
 
 const series = computed(() => {
-  return [{
-    name: 'Uso',
-    data: props.data.map(item => item.value)
-  }]
+  return [
+    {
+      name: 'Uso',
+      data: props.data.map(item => item.value)
+    },
+    {
+      name: 'Restante',
+      data: props.data.map(item => maxValue.value - item.value)
+    }
+  ]
 })
 
 const chartOptions = computed(() => {
@@ -65,6 +77,7 @@ const chartOptions = computed(() => {
       height: 99,
       toolbar: { show: false },
       sparkline: { enabled: false },
+      stacked: true,
       animations: {
         enabled: true,
         easing: 'easeinout',
@@ -75,11 +88,14 @@ const chartOptions = computed(() => {
       bar: {
         horizontal: false,
         columnWidth: '8',
-        borderRadius: 4, 
+        borderRadius: 4,
+        borderRadiusApplication: 'around',
+        borderRadiusWhenStacked: 'all',
         distributed: false,
         dataLabels: {
           position: 'top'
-        }
+        },
+        barHeight: '100%'
       }
     },
     dataLabels: {
@@ -88,7 +104,7 @@ const chartOptions = computed(() => {
     stroke: {
       show: false
     },
-    colors: ['#0641fc'],
+    colors: ['#0641fc', '#f5f5f5'],
     xaxis: {
       categories: props.data.map(() => ''),
       labels: {
@@ -99,13 +115,22 @@ const chartOptions = computed(() => {
       },
       axisTicks: {
         show: false
-      }
+      },
+      offsetX: 0,
+      offsetY: 0
     },
     yaxis: {
-      show: false
+      show: false,
+      max: 100
     },
     grid: {
-      show: false
+      show: false,
+      padding: {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0
+      }
     },
     tooltip: {
       enabled: false
@@ -151,31 +176,63 @@ const chartOptions = computed(() => {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-16);
+  position: relative;
 }
 
 .card-brands-chart__chart-wrapper {
   width: 100%;
   height: 99px;
+  position: relative;
+  overflow: hidden;
 }
 
 .card-brands-chart__apex {
   width: 100%;
 }
 
+.card-brands-chart__apex :deep(.apexcharts-canvas) {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.card-brands-chart__apex :deep(.apexcharts-svg) {
+  overflow: visible;
+}
+
+/* Aplicar bordas arredondadas na barra azul (primeira série) - topo e fundo */
+.card-brands-chart__apex :deep(.apexcharts-series-0) path,
+.card-brands-chart__apex :deep(.apexcharts-series-0) rect {
+  rx: 4 !important;
+  ry: 4 !important;
+}
+
+/* Remover bordas arredondadas da segunda série (cinza) */
+.card-brands-chart__apex :deep(.apexcharts-series-1) path,
+.card-brands-chart__apex :deep(.apexcharts-series-1) rect {
+  rx: 0 !important;
+  ry: 0 !important;
+}
+
 .card-brands-chart__brands {
+  display: grid;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+
+.card-brands-chart__brand-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-8);
-  flex-wrap: wrap;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
 }
 
 .card-brands-chart__brand-logo {
   height: 24px;
   width: auto;
   object-fit: contain;
-  flex: 1;
-  min-width: 0;
+  max-width: 100%;
 }
 
 @media (max-width: 768px) {

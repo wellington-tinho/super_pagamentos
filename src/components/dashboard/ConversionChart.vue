@@ -12,16 +12,16 @@
           <div class="conversion-chart__chart-container">
             <apexchart
               type="donut"
-              :width="88"
-              :height="88"
+              :width="120"
+              :height="120"
               :options="getChartOptions(item)"
               :series="[item.percentage, 100 - item.percentage]"
               class="conversion-chart__apex"
-            />
-            <div class="conversion-chart__label">
-              <span class="conversion-chart__percentage">{{ item.percentage }}%</span>
-              <span class="conversion-chart__text">{{ item.label }}</span>
-            </div>
+              />
+            <span class="conversion-chart__percentage">{{ item.percentage }}%</span>
+          </div>
+          <div class="conversion-chart__label">
+            <span class="conversion-chart__text">{{ item.label }}</span>
           </div>
         </div>
       </div>
@@ -61,18 +61,10 @@ const getColorByLabel = (label) => {
 
 const getChartOptions = (item) => {
   return {
-    chart: {
-      type: 'donut',
-      width: 88,
-      height: 88,
-      sparkline: {
-        enabled: false
-      }
-    },
     plotOptions: {
       pie: {
         donut: {
-          size: '70%',
+          size: '86%',
           labels: {
             show: false
           }
@@ -84,12 +76,13 @@ const getChartOptions = (item) => {
     },
     stroke: {
       show: false,
-      width: 0
+      width: 0,
+      radius: 10
     },
     colors: [item.color, '#edeff4'],
     fill: {
       type: 'solid',
-      colors: [item.color, '#edeff4']
+      colors: [item.color, '#edeff4'],
     },
     legend: {
       show: false
@@ -148,8 +141,8 @@ const getChartOptions = (item) => {
 
 .conversion-chart__chart-container {
   position: relative;
-  width: 88px;
-  height: 88px;
+  width: 120px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -161,23 +154,24 @@ const getChartOptions = (item) => {
   left: 0;
 }
 
+.conversion-chart__percentage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .conversion-chart__label {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-4);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.conversion-chart__percentage {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+  margin-top: var(--spacing-8);
 }
 
 .conversion-chart__text {

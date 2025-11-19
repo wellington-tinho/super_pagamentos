@@ -1,6 +1,11 @@
 <template>
   <aside :class="['sidebar', { 'sidebar--collapsed': isCollapsed }]">
     <div class="sidebar__logo">
+        <img
+          className="logo-super-pagamentos"
+          src="/logo.svg"
+          alt="Logo Super Pagamentos"
+        />
       <span class="sidebar__logo-text">super</span>
     </div>
     
@@ -12,10 +17,10 @@
             v-for="item in menuItems"
             :key="item.path"
             :class="['sidebar__menu-item', { 'sidebar__menu-item--active': isActive(item.path) }]"
-            @click="navigate(item.path)"
+            @click="setActive(item.path)"
           >
             <div class="sidebar__menu-icon">
-              <Icon :name="item.icon" />
+              <component :is="item.icon" class="icon"/>
             </div>
             <span class="sidebar__menu-text">{{ item.label }}</span>
             <svg
@@ -39,10 +44,10 @@
             v-for="item in generalItems"
             :key="item.path"
             :class="['sidebar__menu-item', { 'sidebar__menu-item--active': isActive(item.path) }]"
-            @click="navigate(item.path)"
+            @click.prevent="setActive(item.path)"
           >
             <div class="sidebar__menu-icon">
-              <Icon :name="item.icon" />
+              <component :is="item.icon" class="icon"/>
             </div>
             <span class="sidebar__menu-text">{{ item.label }}</span>
           </li>
@@ -52,59 +57,73 @@
     
     <div class="sidebar__card">
       <div class="sidebar__card-content">
-        <h4 class="sidebar__card-title">Super Cartão Pré-Pago</h4>
-        <p class="sidebar__card-text">
-          Solicite agora o seu cartão físico e crie quantos cartões virtuais quiser.
-        </p>
-        <BaseButton variant="primary" class="sidebar__card-button">
-          Super Cartão Pré-Pago
-        </BaseButton>
+        <div>
+          <p class="sidebar__card-text">
+            Solicite agora o seu <br>
+            cartão físico e crie quantos cartões virtuais quiser.
+          </p>
+          <BaseButton variant="primary" class="sidebar__card-button">
+            Super Cartão Pré-Pago
+          </BaseButton>
+        </div>
+        
       </div>
     </div>
     
     <button class="sidebar__logout" @click="handleLogout">
       <span>Deslogar da conta</span>
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M9 1L9 17M9 17L17 9M9 17L1 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <component :is="Logout" />
     </button>
   </aside>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
 import BaseButton from '../BaseButton.vue'
-import Icon from '../Icon.vue'
+import { ref } from 'vue'
 import { useMenu } from '@/composables/useMenu'
 
-const router = useRouter()
-const route = useRoute()
+import Logout from '@/assets/bottons/logout.svg'
+import Dashboard from '@/assets/menu/dashboard.svg'
+import Clients from '@/assets/menu/clients.svg'
+import Payment from '@/assets/menu/payment.svg'
+import Wallet from '@/assets/menu/wallet.svg'
+import Sellers from '@/assets/menu/sellers.svg'
+import Anticipations from '@/assets/menu/anticipations.svg'
+import Management from '@/assets/menu/management.svg'
+import Integrations from '@/assets/menu/integrations.svg'
+
+import Settings from '@/assets/menu/settings.svg'
+import Perfil from '@/assets/menu/perfil.svg'
+
+
+const isActive = (path) => {
+  return activeItemMenu.value === path
+}
+const setActive = (path) => {
+  activeItemMenu.value = path
+}
+
 const { isCollapsed } = useMenu()
 
 const menuItems = [
-  { path: '/dashboard', label: 'Dashboard', icon: 'home' },
-  { path: '/clientes', label: 'Clientes', icon: 'user' },
-  { path: '/cobrancas', label: 'Cobranças', icon: 'money' },
-  { path: '/carteira', label: 'Carteira', icon: 'wallet' },
-  { path: '/vendedores', label: 'Vendedores', icon: 'fire' },
-  { path: '/antecipacoes', label: 'Antecipações', icon: 'cash', children: true },
-  { path: '/gestao', label: 'Gestão', icon: 'case', children: true },
-  { path: '/integracoes', label: 'Integrações', icon: 'code' }
+  { icon: Dashboard, label: 'Dashboard', path: '/dashboard' },
+  { icon: Clients, label: 'Clientes', path: '/clients' },
+  { icon: Payment, label: 'Cobranças', path: '/payment' },
+  { icon: Wallet, label: 'Carteira', path: '/wallet' },
+  { icon: Sellers, label: 'Vendedores', path: '/sellers' },
+  { icon: Anticipations, label: 'Antecipações', path: '/anticipations', children: true },
+  { icon: Management, label: 'Gestão', path: '/management', children: true },
+  { icon: Integrations, label: 'Integrações', path: '/integrations' }
 ]
+
+const activeItemMenu = ref(menuItems[0].path)
+
 
 const generalItems = [
-  { path: '/configuracoes', label: 'Configurações', icon: 'settings' },
-  { path: '/perfil', label: 'Perfil', icon: 'user' }
+  { icon: Settings, label: 'Configurações', path: '/settings' },
+  { icon: Perfil, label: 'Perfil', path: '/perfil' },
 ]
 
-const isActive = (path) => {
-  return route.path === path
-}
-
-const navigate = (path) => {
-  router.push(path)
-}
 
 const handleLogout = () => {
   console.log('Logout')
@@ -128,14 +147,19 @@ const handleLogout = () => {
 }
 
 .sidebar__logo {
-  padding: var(--spacing-24) var(--spacing-32);
+  padding: 15px var(--spacing-32);
   border-bottom: var(--border-width) solid var(--color-border-light);
+  display: flex;
+  gap: var(--spacing-8);
+}
+
+.logo-super-pagamentos{
+  margin-top: 8px;
 }
 
 .sidebar__logo-text {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
 }
 
 .sidebar__nav {
@@ -165,7 +189,7 @@ const handleLogout = () => {
 .sidebar__menu-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-10);
+  gap: var(--spacing-12);
   padding: var(--spacing-12) var(--spacing-32);
   cursor: pointer;
   transition: background 0.2s ease;
@@ -176,30 +200,24 @@ const handleLogout = () => {
   background: var(--color-background);
 }
 
-.sidebar__menu-item--active {
-  background: var(--color-primary-light);
-}
-
-.sidebar__menu-item--active .sidebar__menu-text {
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-semibold);
-}
-
 .sidebar__menu-icon {
-  width: 24px;
-  height: 24px;
+  aspect-ratio: 1/1;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-background);
   border-radius: var(--border-radius-full);
-  padding: var(--spacing-12);
-  color: var(--color-text-secondary);
+  padding: 10px;
+  color: var(--color-secondary);
 }
+
 
 .sidebar__menu-item--active .sidebar__menu-icon {
   background: var(--color-primary-light);
-  color: var(--color-primary);
+}
+.sidebar__menu-item--active .sidebar__menu-icon svg{
+  color: var(--color-chart-blue);
+  stroke: var(--color-chart-blue);
 }
 
 .sidebar__menu-text {
@@ -217,36 +235,49 @@ const handleLogout = () => {
 
 .sidebar__card {
   margin: var(--spacing-24) var(--spacing-16);
-  padding: var(--spacing-24);
-  background: linear-gradient(180deg, #2a2e33 0%, rgba(0, 0, 0, 0.27) 100%);
+  background: linear-gradient(180deg, #1c1f22 0%, rgba(0, 0, 0, 0.27) 100%);
   border-radius: var(--border-radius-xl);
   position: relative;
   overflow: hidden;
+  height: 350px;
 }
 
 .sidebar__card-content {
   position: relative;
   z-index: 1;
+  background-image: url("/super cartao.png");
+  background-size: cover;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
 }
 
-.sidebar__card-title {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-white);
-  margin-bottom: var(--spacing-8);
-  text-align: center;
+.sidebar__card-content  > div {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  padding: 20px;
+  height: 100%;
+  background: linear-gradient(0deg,  rgba(42, 46, 51, 1) 0%,  rgba(0, 0, 0, 0.63) 100%);
 }
+
 
 .sidebar__card-text {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-lg);
   color: var(--color-white);
   line-height: var(--line-height-normal);
-  margin-bottom: var(--spacing-16);
+  margin-bottom: var(--spacing-24);
+  font-family: var(--font-family);
+  margin-inline: 14px;
+  font-weight: var(--font-weight-semibold);
   text-align: center;
 }
 
 .sidebar__card-button {
   width: 100%;
+  margin-bottom: var(--spacing-4);
 }
 
 .sidebar__logout {

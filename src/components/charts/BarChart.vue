@@ -2,10 +2,11 @@
   <div class="bar-chart">
     <apexchart
       type="bar"
-      :height="isMobile ? 160 : 220"
+      :height="isMobile ? 160 : 300"
       :options="chartOptions"
       :series="series"
       class="bar-chart__apex"
+      :key="isShowAmount"
     />
   </div>
 </template>
@@ -18,6 +19,11 @@ const props = defineProps({
     type: Array,
     required: true,
     default: () => []
+  },
+  isShowAmount: {
+    type: Boolean,
+    default: true,
+    required: true
   }
 })
 
@@ -140,6 +146,9 @@ const chartOptions = computed(() => {
           colors: '#86898b'
         },
         formatter: (value) => {
+          if (!props.isShowAmount) {
+            return ''
+          }
           if (value >= 1000) {
             return `${value / 1000}K`
           }
@@ -179,6 +188,9 @@ const chartOptions = computed(() => {
       },
       y: {
         formatter: (value) => {
+          if (!props.isShowAmount) {
+            return '****'
+          }
           return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
             currency: 'BRL',

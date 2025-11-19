@@ -23,6 +23,7 @@ defineProps({
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-normal);
+  margin: -6px 0;
 }
 
 .base-tag--default {
@@ -46,8 +47,9 @@ defineProps({
 }
 
 .base-tag--info {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  color: var(--color-text-tertiary);
 }
 </style>
 

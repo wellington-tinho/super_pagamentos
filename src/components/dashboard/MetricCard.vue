@@ -6,8 +6,16 @@
     </div>
     
     <div class="metric-card__value">
+      <div class="metric-card__dot-aux" :style="{ backgroundColor: dotColor }"></div>
       <div class="metric-card__dot" :style="{ backgroundColor: dotColor }"></div>
-      <span class="metric-card__amount">{{ formattedValue }}</span>
+      <span class="metric-card__amount" v-if="isShowAmount">{{ formattedValue }}</span>
+      <span class="metric-card__amount" v-else>
+          R$
+          <Dot size="15" strokeWidth="10" />
+          <Dot size="15" strokeWidth="10" />
+          <Dot size="15" strokeWidth="10" />
+          <Dot size="15" strokeWidth="10" />
+      </span>
     </div>
   </BaseCard>
 </template>
@@ -16,6 +24,8 @@
 import BaseCard from '../BaseCard.vue'
 import BaseTag from '../BaseTag.vue'
 import { computed } from 'vue'
+import { Dot } from 'lucide-vue-next';
+
 
 const props = defineProps({
   label: {
@@ -41,6 +51,11 @@ const props = defineProps({
   isCurrency: {
     type: Boolean,
     default: true
+  },
+  isShowAmount: {
+    type: Boolean,
+    default: true,
+    required: true
   }
 })
 
@@ -60,6 +75,7 @@ const formattedValue = computed(() => {
 <style scoped>
 .metric-card {
   padding: var(--spacing-16);
+  border: 1px solid var(--color-border-light);
 }
 
 .metric-card__header {
@@ -70,10 +86,9 @@ const formattedValue = computed(() => {
 }
 
 .metric-card__label {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
-  text-transform: uppercase;
 }
 
 .metric-card__value {
@@ -82,11 +97,19 @@ const formattedValue = computed(() => {
   gap: var(--spacing-8);
 }
 
-.metric-card__dot {
+.metric-card__dot, .metric-card__dot-aux {
   width: 12px;
   height: 12px;
   border-radius: 50%;
   flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.metric-card__dot-aux {
+  width: 18px;
+  height: 18px;
+  margin-right: -30px;
+  filter: opacity(50%)
 }
 
 .metric-card__amount {
@@ -94,6 +117,15 @@ const formattedValue = computed(() => {
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
+}
+.metric-card__amount.hidden{
+  color: var(--color-text-secondary);
+  background: var(--color-background);
+  filter: blur(4.5px);
+  border-radius: var(--border-radius-xs);
+  user-select: none;
+  pointer-events: none;
+  transition: filter 0.2s;
 }
 
 @media (max-width: 768px) {

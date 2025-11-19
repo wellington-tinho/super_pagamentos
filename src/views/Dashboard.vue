@@ -7,95 +7,78 @@
     
     <main class="dashboard__main">
       <div class="dashboard__filters">
-        <BaseButton variant="primary" class="dashboard__new-charge-btn">
-          Nova cobrança
-          <template #icon-right>
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="2"/>
-              <path d="M9 5V13M5 9H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </template>
-        </BaseButton>
-        
-        <BaseSelect
-          v-model="selectedPeriod"
-          :options="periodOptions"
-          class="dashboard__filter"
-        >
-          <template #icon-left>
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <rect x="3" y="4" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M3 7H15M6 3V7M12 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-          </template>
-        </BaseSelect>
-        
-        <div class="dashboard__date-range">
-          <BaseInput
-            v-model="startDate"
-            placeholder="10-06-2020"
-            class="dashboard__date-input"
+        <div class="dashboard__items-left">
+          <BaseButton variant="primary" class="dashboard__new-charge-btn">
+            Nova cobrança
+            <template #icon-right>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M9 5V13M5 9H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </template>
+          </BaseButton>
+          
+          <hr class="pipe-divider"/>
+
+          <BaseSelect
+            v-model="selectedPeriod"
+            :options="periodOptions"
+            class="dashboard__filter"
           >
             <template #icon-left>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <rect x="3" y="4" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M3 7H15M6 3V7M12 3V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
+              <CalendarDays color="#0641FC"/>
             </template>
-          </BaseInput>
-          <span class="dashboard__date-separator">-</span>
-          <BaseInput
-            v-model="endDate"
-            placeholder="30-01-2025"
-            class="dashboard__date-input"
-          >
-            <template #icon-right>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </template>
-          </BaseInput>
+          </BaseSelect>
+          
+          <div class="dashboard__date-range">
+            <div class="dashboard__date-input">
+              <DateRange  />
+            </div>
+          </div>
         </div>
         
-        <BaseSelect
-          v-model="selectedChargeType"
-          :options="chargeTypeOptions"
-          placeholder="Tipo de cobrança"
-          class="dashboard__filter"
-        >
-          <template #icon-left>
+        <div class="dashboard__items-right">
+          <BaseSelect
+            v-model="selectedChargeType"
+            :options="chargeTypeOptions"
+            placeholder="Tipo de cobrança"
+            class="dashboard__filter"
+          >
+            <template #icon-left>
+              <component :is="TypeOfCharge" />
+            </template>
+          </BaseSelect>
+          
+          <button class="dashboard__download-btn" @click="">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M3 6H15M3 9H15M3 12H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M9 1V13M9 13L5 9M9 13L13 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M1 17H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-          </template>
-        </BaseSelect>
-        
-        <button class="dashboard__download-btn">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M9 1V13M9 13L5 9M9 13L13 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M1 17H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
+          </button>
+        </div>
       </div>
       
       <div class="dashboard__content">
         <div class="dashboard__revenue-section">
-          <RevenueCard
-            v-if="!isMobile"
-            :value="metrics?.totalRevenue || 0"
-            :growth="metrics?.growth || 0"
-          />
           
           <div class="dashboard__revenue-chart">
-            <BarChart :data="revenueData" />
+            <RevenueCard
+              :value="metrics?.totalRevenue || 0"
+              :growth="metrics?.growth || 0"
+              :isShowAmount="isShowAmount"
+              @toggleShowAmount="isShowAmount = !isShowAmount"
+            />
+            <BarChart :data="revenueData" :isShowAmount = "isShowAmount" />
             
             <div class="dashboard__metrics-grid">
               <MetricCard
+                :isShowAmount="isShowAmount"
                 label="Faturamento recebido"
                 :value="metrics?.revenueReceived || 0"
                 dot-color="#0641fc"
               />
               <MetricCard
+                :isShowAmount="isShowAmount"
                 label="Faturamento previsto"
                 :value="metrics?.revenuePredicted || 0"
                 dot-color="#7c3aed"
@@ -103,16 +86,19 @@
                 tag-variant="info"
               />
               <MetricCard
+                :isShowAmount="isShowAmount"
                 label="Vendas pendentes"
                 :value="metrics?.pendingSales || 0"
                 dot-color="#f59e0b"
               />
               <MetricCard
+                :isShowAmount="isShowAmount"
                 label="Ticket médio"
                 :value="metrics?.averageTicket || 0"
                 dot-color="#7c3aed"
               />
               <MetricCard
+                :isShowAmount="isShowAmount"
                 label="Número de cobranças"
                 :value="metrics?.numberOfCharges || 0"
                 :is-currency="false"
@@ -143,6 +129,7 @@
             :count="metrics?.chargebacksCount || 0"
             :percentage="metrics?.chargebacksPercentage || 0"
             :show-percentage="true"
+            :showBadge="true"
           />
           <FinancialMetricsCard
             title="Cancelados"
@@ -170,14 +157,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted} from 'vue'
 import Sidebar from '@/components/layout/Sidebar.vue'
 import Header from '@/components/layout/Header.vue'
 import MobileHeader from '@/components/layout/MobileHeader.vue'
 import BottomNavigation from '@/components/layout/BottomNavigation.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseSelect from '@/components/BaseSelect.vue'
-import BaseInput from '@/components/BaseInput.vue'
 import RevenueCard from '@/components/dashboard/RevenueCard.vue'
 import MetricCard from '@/components/dashboard/MetricCard.vue'
 import BarChart from '@/components/charts/BarChart.vue'
@@ -187,13 +173,18 @@ import ConversionChart from '@/components/dashboard/ConversionChart.vue'
 import CardBrandsChart from '@/components/dashboard/CardBrandsChart.vue'
 import { useDashboardMetrics } from '@/composables/useDashboardMetrics'
 import { useDateRange } from '@/composables/useDateRange'
+import TypeOfCharge from '@/assets/bottons/type-of-charge.svg'
 import mockData from '@/data/mock.json'
+import { CalendarDays } from 'lucide-vue-next';
+import DateRange from '@/components/dashboard/DateRange.vue';
 
-const { metrics, revenueData, loading, fetchMetrics } = useDashboardMetrics()
-const { startDate, endDate, periodOptions, updatePeriod } = useDateRange()
+const { metrics, revenueData, fetchMetrics } = useDashboardMetrics()
+const { periodOptions } = useDateRange()
 
 const selectedPeriod = ref('specific')
 const selectedChargeType = ref('')
+
+const isShowAmount = ref(true)
 
 const chargeTypeOptions = [
   { value: 'all', label: 'Todos os tipos' },
@@ -229,30 +220,14 @@ const handleAuthorizeTransfer = async (transferId) => {
   pendingTransfer.value = null
 }
 
-const isMobile = ref(false)
-
-const handleResize = () => {
-  if (typeof window !== 'undefined') {
-    isMobile.value = window.innerWidth <= 768
-  }
-}
-
 onMounted(() => {
   fetchMetrics()
-  if (typeof window !== 'undefined') {
-    window.addEventListener('resize', handleResize)
-    handleResize()
-  }
 })
 
-onUnmounted(() => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('resize', handleResize)
-  }
-})
 </script>
 
 <style scoped>
+
 .dashboard {
   min-height: 100vh;
   background: var(--color-background);
@@ -262,6 +237,13 @@ onUnmounted(() => {
   margin-left: var(--sidebar-width);
   margin-top: var(--header-height);
   padding: var(--spacing-24);
+}
+
+.dashboard__main .pipe-divider{
+  height: 40px;
+  border: none;
+  border-right: 1px solid var(--color-border);
+  margin-inline: 10px;
 }
 
 @media (max-width: 768px) {
@@ -274,6 +256,12 @@ onUnmounted(() => {
 }
 
 .dashboard__filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard__items-left, .dashboard__items-right{
   display: flex;
   align-items: center;
   gap: var(--spacing-16);
@@ -297,7 +285,18 @@ onUnmounted(() => {
 }
 
 .dashboard__date-input {
-  flex: 1;
+  /* flex: 1; */
+  display: flex;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-white);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-full);
+  cursor: pointer;
+  color: var(--color-text-primary);
+  transition: all 0.2s ease;
 }
 
 .dashboard__date-separator {
@@ -320,8 +319,8 @@ onUnmounted(() => {
 }
 
 .dashboard__download-btn:hover {
-  background: var(--color-background);
   border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .dashboard__content {
@@ -345,6 +344,7 @@ onUnmounted(() => {
 
 .dashboard__metrics-grid {
   display: grid;
+  align-items: baseline;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: var(--spacing-16);
   margin-top: var(--spacing-24);

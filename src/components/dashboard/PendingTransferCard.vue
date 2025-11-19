@@ -22,9 +22,7 @@
       <BaseButton variant="primary" @click="handleAuthorize">
         Autorizar transferência
         <template #icon-right>
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M9 1L9 17M9 17L17 9M9 17L1 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+           <component :is="Wallet" />
         </template>
       </BaseButton>
     </div>
@@ -34,6 +32,8 @@
 <script setup>
 import BaseCard from '../BaseCard.vue'
 import BaseButton from '../BaseButton.vue'
+import Wallet from '@/assets/bottons/wallet.svg'
+
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -57,6 +57,7 @@ const formattedAmount = computed(() => {
 })
 
 const handleAuthorize = () => {
+  return //To-do remove and implement
   emit('authorize', props.transferId)
 }
 </script>
@@ -81,11 +82,12 @@ const handleAuthorize = () => {
   width: 57px;
   height: 57px;
   border-radius: 50%;
-  background: var(--color-warning);
+  background: var(--color-border-light);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-white);
+  color: var(--color-text-primary);
+
 }
 
 .pending-transfer-card__badge {
@@ -95,11 +97,12 @@ const handleAuthorize = () => {
   width: 19px;
   height: 19px;
   border-radius: 50%;
-  background: var(--color-error);
+  background: var(--color-warning);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-white);
+  padding-left: 2px;
+  color: var(--color-text-primary);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
 }
