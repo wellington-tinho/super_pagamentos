@@ -46,8 +46,8 @@ const navigate = (path) => {
   background-color: var(--color-primary);
   border-radius: 50%;
   padding: 2px;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;

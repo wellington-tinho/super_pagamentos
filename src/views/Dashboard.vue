@@ -472,8 +472,16 @@ svg.icone{
     grid-template-columns: 1fr;
   }
 }
+.dashboard__revenue-chart-mobile{
+  display: none;
+}
 
 @media (max-width: 768px) {
+
+  .dashboard__revenue-chart-mobile{
+    display: flex;
+    flex-direction: column;
+  }
 
   .pipe-divider, .dashboard__items-left > div, .dashboard__items-right, .dashboard__download-btn{
     display: none;
